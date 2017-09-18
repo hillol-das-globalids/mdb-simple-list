@@ -80,7 +80,7 @@ Custom property | Description | Default
       }
     </style>
     <template is="dom-if" if="{{items.length}}" on-dom-change="_renderList">
-      <paper-listbox selected="{{selected}}">
+            <paper-listbox selected="{{selected}}" on-tap="_listClicked">
         <template is="dom-repeat" items="{{items}}">
         </template>
       </paper-listbox>
@@ -129,7 +129,41 @@ Custom property | Description | Default
         height: {
           type: String,
           value: '400'
+                },
+
+                handleClick: {
+                    type: Boolean,
+                    value: false
+                },
+
+                clickValue: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
         }
+
+            },
+
+            listeners: {
+                'appcoldimension-checked': '_appColDimensionParentChecked'
+            },
+
+
+            _appColDimensionParentChecked: function (e) {
+                console.log("clicked: " + e.detail.checked);
+                if (!e.detail.checked)
+                    return;
+                var itemsDom = this.querySelectorAll('mdb-dimension-finder-item');
+                itemsDom.forEach(function (item, index) {
+                    if (item.id !== e.detail.id) {
+//                        item.checked = false;
+                        item.querySelectorAll('paper-checkbox')[0].checked = false;
+                        delete item.querySelectorAll('#checkbox')[0].classList.remove("checked");
+                    }
+                });
+
+                var test = {};
+
       },
 
       _renderList: function () {
@@ -144,6 +178,13 @@ Custom property | Description | Default
           this._repeater.items = this.items;
         }
       },
+
+            _listClicked: function (e) {
+                var that = this;
+                setTimeout(function () {
+                    that.set('clickValue', !that.clickValue);
+                }, 50);
+            },
 
       _selectedChanged: function (value) {
         this.selectedItem = typeof value === typeof 0 ? this.items[value] : undefined;
